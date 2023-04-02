@@ -58,8 +58,32 @@ Table.create("Image Results");
 	run("ROI Manager...");
 	//make sure ROI Maneger is clean of any additional ROIs
 		roiManager("reset");
-	//open the file with default ROIs
-		roiManager("Open", original_dir + "DefaultRoiSet.zip");
+		
+	//Draw ROIs in the middle of the image
+	 	ROI_height = 120;
+	    ROI_width = 90;
+		Image_width = getWidth();
+		
+		//coordinates for the top left corner of the first ROI
+		x_coordinate = Image_width/2 - 2*ROI_width;
+	    y_coordinate = 15;
+	    
+		//Draw 10 identical ROIs   placed in the middle of the image
+	    k = 0;
+	    for (k = 0; k < 5; k++) {
+	    makeRectangle(x_coordinate, k*ROI_height + y_coordinate, ROI_width, ROI_height);
+	    roiManager("Add");
+	    roiManager("Select", k);
+        roiManager("Rename", k+1);
+        }
+        for (k = 6; k < 11; k++) {
+	    makeRectangle(x_coordinate + ROI_width, (k-6)*ROI_height + y_coordinate, ROI_width, ROI_height);
+	    roiManager("Add");
+	    roiManager("Select", k-1);
+        roiManager("Rename", k);
+        }
+        
+       // roiManager("Open", original_dir + "DefaultRoiSet.zip");
 		roiManager("Show All");
 		roiManager("Show All with labels");
 		
