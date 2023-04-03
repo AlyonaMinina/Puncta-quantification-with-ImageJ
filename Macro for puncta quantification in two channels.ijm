@@ -53,9 +53,9 @@ prominence_for_Channel_2 = 40;
 	ROI_width = 10;
 	
 	Dialog.create("Please provide ROIs parameters for your images");
-	Dialog.addString("Channel 1 is:", Channel_1);
+	Dialog.addString("Channel 1 name:", Channel_1);
 	Dialog.addToSameRow();
-	Dialog.addString("Channel 2 is:", Channel_2);
+	Dialog.addString("Channel 2 name:", Channel_2);
 	Dialog.addNumber("Number of ROIs to be analyzed on each image:", number_of_ROIs);
 	Dialog.addNumber("Dimensions of ROIs. ROI height in um:", ROI_height);
 	//Dialog.addToSameRow();
@@ -132,22 +132,22 @@ prominence_for_Channel_2 = 40;
 			Table.set("Area in um2", current_last_row, area, "Image Results");
 			run("Clear Results");
 			
-//Quantify puncta on the first channel of the image. NB!!! if needed change the prominence for Maxima find in th eline below!
+//Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 11
 			setSlice(1);
 			run("Find Maxima...", "prominence=prominence_for_Channel_1 output=Count");
 			puncta = getResult("Count",  0);
-			Column_1 = "Number of puncta in the " + Channel_1 + " channel";
+			Column_1 = "Number of " + Channel_1 + " puncta in the ROI";
 			Table.set(Column_1, current_last_row, puncta, "Image Results");
 			Column_2 = "Number of "+ Channel_1 + " puncta per 10 um2";
 			Table.set(Column_2, current_last_row, 10*puncta/area, "Image Results");
 			run("Clear Results");
 			
 			
-//Quantify puncta in the second channel of the image. NB!!! if needed change the prominence for Maxima find in th eline below!			
+//Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
 			setSlice(2);
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
 			puncta = getResult("Count",  0);
-			Column_3 = "Number of puncta in the " + Channel_2 + " channel";
+			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
 			Table.set(Column_3, current_last_row, puncta, "Image Results");
 			Column_4 = "Number of "+ Channel_2 + " puncta per 10 um2";
 			Table.set(Column_4, current_last_row, 10*puncta/area, "Image Results");			
