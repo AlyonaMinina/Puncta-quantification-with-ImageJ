@@ -109,7 +109,8 @@ Table.create("Image Results");
 			Table.set("Area in um2", current_last_row, area, "Image Results");
 			run("Clear Results");
 			
-//NB!!! if needed change the prominence for Maxima find in th eline below!
+//NB!!! if needed change the prominence for Maxima find in the line below!
+			setSlice(1);
 			run("Find Maxima...", "prominence=35 output=Count");
 			puncta = getResult("Count",  0);
 			Table.set("Number of puncta", current_last_row, puncta, "Image Results");
