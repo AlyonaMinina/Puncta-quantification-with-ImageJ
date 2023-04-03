@@ -130,8 +130,10 @@ Table.create("Image Results");
 			
 		//calculate the percentage of GFP-positive RFP puncta (for Sanjana's marker lines)
 			G = Table.get("Number of puncta in the GFP channel", current_last_row,"Image Results");
+			GInt = parseInt(G);
 			R = Table.get("Number of puncta in the RFP channel", current_last_row,"Image Results");
-			Table.set("% of GFP-positive RFP puncta", current_last_row, G*100/R, "Image Results");	
+			RInt = parseInt(R);
+			Table.set("% of GFP-positive RFP puncta", current_last_row, GInt*100/RInt, "Image Results");		
 			}
 
 //Save maxima quantification as .csv file and ROIs as a .zip file
