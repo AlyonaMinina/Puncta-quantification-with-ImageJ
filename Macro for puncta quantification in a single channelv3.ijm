@@ -1,16 +1,14 @@
-//This macro processes a fodler with .czi images to quantify number of puncta per 10 um2 within user-selected ROIs. For each aimge, ROIs are saved as.zip files and qunatifications is saved as .csv file
-//NB!! Requires presence of the DefaultROI.zip file in the original folder with .czi files!!
+//This macro processes a folder with .czi images to quantify number of puncta per 10 um2 within user-selected ROIs. For each image, ROIs are saved as.zip files and quantifications is saved as .csv file
 
 //Step by step:
 	//1. Create a folder with .czi images selected for analysis (do not export them as other file formats!)
-	//2. Copy the DefaultROI.zip into the same folder. If needed one can modify default ROI number and size/position-> resave the file with the same name into the same directory
-	//3. Drag and drop macro file into imageJ to have access to the code
-	//4. Load the macro it will open one image at a time and wait for the user to adjust ROI position size.
-	//5. Before clicking "ok" it is advisable to double check if and then will proceed with finding maxima and saving data 
-	//6. If needed adjust the "prominence" value in the Line 112 to not include noise and not exclude the puncta
-	//7. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROIManager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv file with area in um2, puncta and puncta/10 um2 
+	//2. Drag and drop macro file into imageJ to have access to the code
+	//3. If needed edit the default number of ROIs and their dimensions in the dialog window
+	//4. The macro will open one image at a time and wait for the user to adjust ROI position size.
+	//5. Before clicking "ok" it is advisable to double check if finding maxima prominence value is optimal for your image. If needed adjust the "prominence" value in the Lines 11 and 12 to not include noise and not exclude the puncta
+	//7. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROI Manager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv contining information about image name, ROI number, ROI area in um2, puncta number and puncta number/10 um2 
 
-
+prominence_for_Channel_1 = 10;
 
 //Clear the log window if it was open
 	if (isOpen("Log")){
@@ -18,9 +16,14 @@
 		run("Close");
 	}
 	
-print("Welcome to the puncta quantification macro");
+//Print the unnecessary greeting
+	print(" ");
+	print("Welcome to the puncta quantification macro!");
+	print(" ");
+	print("Please select the folder with images for analysis");
+	print(" ");
 
-//Find the orignal directory and create a new one for Results
+//Find the original directory and create a new one for quantification results
 	original_dir = getDirectory("Select a directory");
 	original_folder_name = File.getName(original_dir);
 	output_dir = original_dir +"Results" + File.separator;
@@ -29,71 +32,86 @@ print("Welcome to the puncta quantification macro");
 // Get a list of all the files in the directory
 	file_list = getFileList(original_dir);
 
-
-//create a shorter list contiaiing . czi files only
+//Create a shorter list contiaiing . czi files only
 	czi_list = newArray(0);
 	for(z = 0; z < file_list.length; z++) {
 		if(endsWith(file_list[z], ".czi")) {
 			czi_list = Array.concat(czi_list, file_list[z]);
-			}
 		}
-print(czi_list.length + " images were detected for analysis");
-print("");
-
-Table.create("Image Results");
-// Loop through the list of . czi files
-	for (i = 0; i < czi_list.length; i++){
-	 path = original_dir + czi_list[i];
-	 run("Bio-Formats Windowless Importer",  "open=path");
-		      
-//get the image file title and remove the extension from it    
-	title = getTitle();
-	a = lengthOf(title);
-	b = a-4;
-	short_name = substring(title, 0, b);
-	print ("Processing image " + i+1 + " out of " + czi_list.length + ":");
-	print(title);
+	}
+	
+//kindly remind the user how many images theiy put into their folder
+	print(czi_list.length + " images were detected for analysis");
 	print("");
+
+//Request info from the user about the number and dimensions of the ROIs they wish to analyze
+	Channel_1 = "GFP";	  
+	number_of_ROIs = 10;
+	ROI_height = 20;
+	ROI_width = 10;
+	
+	Dialog.create("Please provide ROIs parameters for your images");
+	Dialog.addString("Channel 1 name:", Channel_1);
+	Dialog.addNumber("Number of ROIs to be analyzed on each image:", number_of_ROIs);
+	Dialog.addNumber("Dimensions of ROIs. ROI height in um:", ROI_height);
+	//Dialog.addToSameRow();
+	Dialog.addNumber("ROI width in um:", ROI_width);
+	Dialog.show();
+	Channel_1 = Dialog.getString();
+	number_of_ROIs = Dialog.getNumber();
+	ROI_height = Dialog.getNumber();
+	ROI_width = Dialog.getNumber();	
+
+//Create the table for all results
+	Table.create("Image Results");
+	
+//Loop analysis through the list of . czi files
+	for (i = 0; i < czi_list.length; i++){
+		path = original_dir + czi_list[i];
+		run("Bio-Formats Windowless Importer",  "open=path");
+		      
+//Get the image file title and remove the extension from it    
+		title = getTitle();
+		a = lengthOf(title);
+		b = a-4;
+		short_name = substring(title, 0, b);
+		
+//Print for the user what image is being processed
+		print ("Processing image " + i+1 + " out of " + czi_list.length + ":");
+		print(title);
+		print("");
 					
-//adjust the ROIs for each micrographs
-	run("ROI Manager...");
-	//make sure ROI Maneger is clean of any additional ROIs
+//Adjust the ROIs for each micrographs
+		run("ROI Manager...");
+		
+//Make sure ROI Manager is clean of any additional ROIs
 		roiManager("reset");
+	
+//Obtain coordinates to draw ROIs in the center of the image
+		x = getWidth()/2;
+		toScaled(x);
+		x_coordinate =  parseInt(x);
 		
-	//Draw ROIs in the middle of the image
-	 	ROI_height = 120;
-	    ROI_width = 90;
-		Image_width = getWidth();
-		
-		//coordinates for the top left corner of the first ROI
-		x_coordinate = Image_width/2 - 2*ROI_width;
-	    y_coordinate = 15;
-	    
-		//Draw 10 identical ROIs   placed in the middle of the image
-	    k = 0;
-	    for (k = 0; k < 5; k++) {
-	    makeRectangle(x_coordinate, k*ROI_height + y_coordinate, ROI_width, ROI_height);
-	    roiManager("Add");
-	    roiManager("Select", k);
-        roiManager("Rename", k+1);
-        }
-        for (k = 6; k < 11; k++) {
-	    makeRectangle(x_coordinate + ROI_width, (k-6)*ROI_height + y_coordinate, ROI_width, ROI_height);
-	    roiManager("Add");
-	    roiManager("Select", k-1);
-        roiManager("Rename", k);
-        }
-        
-       // roiManager("Open", original_dir + "DefaultRoiSet.zip");
-		roiManager("Show All");
-		roiManager("Show All with labels");
-		
-	 //Wait for the user to adjust the ROIs size and position
+		y = getWidth()/2;
+		toScaled(y);
+		y_coordinate =  parseInt(y);
+
+//Draw ROIs of the user-provided number and dimensions
+		for (no_roi = 0; no_roi < number_of_ROIs; no_roi++) {
+			    makeRectangle(x_coordinate, y_coordinate, ROI_width, ROI_height);
+			    run("Specify...", "width=ROI_width height=ROI_height x=x_coordinate y=y_coordinate slice=1 scaled");
+		        roiManager("Add");
+			    roiManager("Select", no_roi);
+		        roiManager("Rename", no_roi + 1);
+		        roiManager("Show All");
+				roiManager("Show All with labels");
+				}
+			
+//Wait for the user to adjust the ROIs size and position
 		waitForUser("Adjust each ROI, then hit OK"); 
 						
-	//Perform "Find Maxima" for each ROI and save the results into a custom table
-		
-        run("ROI Manager...");
+//Perform "Find Maxima" for each ROI and save the results into a custom table
+		run("ROI Manager...");
 		ROI_number = roiManager("count");
 		for ( r=0; r<ROI_number; r++ ) {
 			roiManager("Select", r);
@@ -109,14 +127,16 @@ Table.create("Image Results");
 			Table.set("Area in um2", current_last_row, area, "Image Results");
 			run("Clear Results");
 			
-//NB!!! if needed change the prominence for Maxima find in the line below!
+//Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 11
 			setSlice(1);
-			run("Find Maxima...", "prominence=35 output=Count");
+			run("Find Maxima...", "prominence=prominence_for_Channel_1 output=Count");
 			puncta = getResult("Count",  0);
-			Table.set("Number of puncta", current_last_row, puncta, "Image Results");
-			Table.set("Number of puncta per 10 um2", current_last_row, 10*puncta/area, "Image Results");
+			Column_1 = "Number of " + Channel_1 + " puncta in the ROI";
+			Table.set(Column_1, current_last_row, puncta, "Image Results");
+			Column_2 = "Number of "+ Channel_1 + " puncta per 10 um2";
+			Table.set(Column_2, current_last_row, 10*puncta/area, "Image Results");
 			run("Clear Results");
-			}
+		}
 
 //Save maxima quantification as .csv file and ROIs as a .zip file
 			roiManager("Save", output_dir + short_name +"_ROIs.zip");
@@ -124,10 +144,11 @@ Table.create("Image Results");
 			roiManager("reset");
 			run("Clear Results");
 	}		
+
 //Save the quantification results into a .csv table file
-   Table.save(output_dir + "Puncta quantification for " + original_folder_name + ".csv");
+	Table.save(output_dir + "Puncta quantification for " + original_folder_name + ".csv");
  
-// a feable attempt to close those pesky ImageJ windows. "Image results" tends to hang around anyways			
+//A feeble attempt to close those pesky ImageJ windows		
 	run("Close All");
 	roiManager("reset");
 	run("Clear Results");
@@ -138,7 +159,7 @@ Table.create("Image Results");
 	selectWindow("ROI Manager");
 	run("Close");
  
-//final message
+//Print the final message
    print(" ");
    print("All Done!");
    print("Your quantification results are saved in the folder " + output_dir);
