@@ -7,7 +7,7 @@
 	//3. Drag and drop macro file into imageJ to have access to the code
 	//4. Load the macro it will open one image at a time and wait for the user to adjust ROI position size.
 	//5. Before clicking "ok" it is advisable to double check if and then will proceed with finding maxima and saving data 
-	//6. If needed adjust the "prominence" value in the Line 64 to not include noise and not exclude the puncta
+	//6. If needed adjust the "prominence" value in the Lines 114 and  123 to not include noise and not exclude the puncta
 	//7. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROIManager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv file with area in um2, puncta and puncta/10 um2 
 
 
@@ -23,6 +23,7 @@ print("Please select the folder with images for analysis");
 
 //Find the orignal directory and create a new one for Results
 	original_dir = getDirectory("Select a directory");
+	original_folder_name = File.getName(original_dir);
 	output_dir = original_dir +"Results" + File.separator;
 	File.makeDirectory(output_dir);
 
@@ -140,7 +141,7 @@ Table.create("Image Results");
 			run("Clear Results");
 	}		
 //Save the quantification results into a .csv table file
-  Table.save(output_dir + "Puncta quantification" + ".csv");
+  Table.save(output_dir + "Puncta quantification for " + original_folder_name + ".csv");
  
 // a feable attempt to close those pesky ImageJ windows. "Image results" tends to hang around anyways			
 	run("Close All");
