@@ -6,7 +6,7 @@
 	//3. If needed edit the default number of ROIs and their dimensions in the dialog window
 	//4. The macro will open one image at a time and wait for the user to adjust ROI position size.
 	//5. Before clicking "ok" it is advisable to double check if finding maxima prominence value is optimal for your image. If needed adjust the "prominence" value in the Lines 11 and 12 to not include noise and not exclude the puncta
-	//7. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROI Manager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv contining information about image name, ROI number, ROI area in um2, puncta number and puncta number/10 um2 
+	//6. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROI Manager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv contining information about image name, ROI number, ROI area in um2, puncta number and puncta number/10 um2 
 
 prominence_for_Channel_1 = 10;
 prominence_for_Channel_2 = 40;
@@ -143,7 +143,7 @@ prominence_for_Channel_2 = 40;
 			run("Clear Results");
 			
 			
-//Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
+//Quantify puncta on the second channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
 			setSlice(2);
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
 			puncta = getResult("Count",  0);
