@@ -1,15 +1,15 @@
-//This macro processes a folder with .czi images to quantify number of puncta per 10 um2 within user-selected ROIs. For each image, ROIs are saved as.zip files and quantifications is saved as .csv file
+//This macro processes a folder with .czi images to quantify number of puncta per 10 um2 within user-selected ROIs. 
+//For each image, ROIs are saved as.zip files and quantifications is saved as .csv file
 
 //Step by step:
 	//1. Create a folder with .czi images selected for analysis (do not export them as other file formats!)
-	//2. Drag and drop macro file into imageJ to have access to the code
+	//2. Drag and drop macro file into ImageJ to have access to the code
 	//3. If needed edit the default number of ROIs and their dimensions in the dialog window
 	//4. The macro will open one image at a time and wait for the user to adjust ROI position size.
 	//5. Before clicking "ok" it is advisable to double check if finding maxima prominence value is optimal for your image. If needed adjust the "prominence" value in the Lines 11 and 12 to not include noise and not exclude the puncta
 	//6. After all ROIs are adjusted and Finding maxima prominence is verified -> click ok. The macro will process all ROIs present in the ROI Manager. The ROI.zip file will be saved for each image file individually, while quantification data will be compiled into a single file.csv contining information about image name, ROI number, ROI area in um2, puncta number and puncta number/10 um2 
 
-prominence_for_Channel_1 = 10;
-prominence_for_Channel_2 = 40;
+
 
 //Clear the log window if it was open
 	if (isOpen("Log")){
@@ -51,21 +51,32 @@ prominence_for_Channel_2 = 40;
 	number_of_ROIs = 10;
 	ROI_height = 20;
 	ROI_width = 10;
+	prominence_for_Channel_1 = 30;
+	prominence_for_Channel_2 = 40;
 	
 	Dialog.create("Please provide ROIs parameters for your images");
 	Dialog.addString("Channel 1 name:", Channel_1);
 	Dialog.addToSameRow();
 	Dialog.addString("Channel 2 name:", Channel_2);
+	Dialog.addNumber("Prominence value for Ch1:", prominence_for_Channel_1);
+	Dialog.addToSameRow();
+	Dialog.addNumber("Prominence value for Ch2:", prominence_for_Channel_2);
 	Dialog.addNumber("Number of ROIs to be analyzed on each image:", number_of_ROIs);
 	Dialog.addNumber("Dimensions of ROIs. ROI height in um:", ROI_height);
 	//Dialog.addToSameRow();
 	Dialog.addNumber("ROI width in um:", ROI_width);
 	Dialog.show();
 	Channel_1 = Dialog.getString();
+	prominence_for_Channel_1 = Dialog.getNumber();
 	Channel_2 = Dialog.getString();
+	prominence_for_Channel_2 = Dialog.getNumber();
 	number_of_ROIs = Dialog.getNumber();
 	ROI_height = Dialog.getNumber();
 	ROI_width = Dialog.getNumber();	
+	print("The analysis will be performed using prominnce value for Ch1 = " + prominence_for_Channel_1 + " and for Ch2 = " + prominence_for_Channel_2 + "," );
+	print(number_of_ROIs + " ROIs will be analyzed per image, which is equivalent to " + ROI_height*ROI_width*number_of_ROIs + " um2 of total analyzed area per image");
+	print(" ");	
+	print(" ");
 
 //Create the table for all results
 	Table.create("Image Results");
@@ -101,7 +112,15 @@ prominence_for_Channel_2 = 40;
 		toScaled(y);
 		y_coordinate =  parseInt(y);
 
-//Draw ROIs of the user-provided number and dimensions
+//Draw ROIs of the user-provided number and dimensions. Automatically load in already existing ROIs for the image (if not desired, comment out lines 107-114 and the line 124.
+	ROIset = output_dir + short_name + "_ROIs.zip";
+	f = File.exists(ROIset);
+		if(f>0){ 
+		roiManager("Open", ROIset);
+		roiManager("Show All");
+		roiManager("Show All with labels");
+		}
+	else {
 		for (no_roi = 0; no_roi < number_of_ROIs; no_roi++) {
 			    makeRectangle(x_coordinate, y_coordinate, ROI_width, ROI_height);
 			    run("Specify...", "width=ROI_width height=ROI_height x=x_coordinate y=y_coordinate slice=1 scaled");
@@ -111,8 +130,8 @@ prominence_for_Channel_2 = 40;
 		        roiManager("Show All");
 				roiManager("Show All with labels");
 				}
-			
-//Wait for the user to adjust the ROIs size and position
+			}
+	//Wait for the user to adjust the ROIs size and position
 		waitForUser("Adjust each ROI, then hit OK"); 
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
@@ -135,32 +154,33 @@ prominence_for_Channel_2 = 40;
 //Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 11
 			setSlice(1);
 			run("Find Maxima...", "prominence=prominence_for_Channel_1 output=Count");
-			puncta = getResult("Count",  0);
+			Ch1_puncta = getResult("Count",  0);
 			Column_1 = "Number of " + Channel_1 + " puncta in the ROI";
-			Table.set(Column_1, current_last_row, puncta, "Image Results");
+			Table.set(Column_1, current_last_row, Ch1_puncta, "Image Results");
 			Column_2 = "Number of "+ Channel_1 + " puncta per 10 um2";
-			Table.set(Column_2, current_last_row, 10*puncta/area, "Image Results");
+			Table.set(Column_2, current_last_row, 10*Ch1_puncta/area, "Image Results");
 			run("Clear Results");
 			
 			
 //Quantify puncta on the second channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
 			setSlice(2);
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
-			puncta = getResult("Count",  0);
+			Ch2_puncta = getResult("Count",  0);
 			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
-			Table.set(Column_3, current_last_row, puncta, "Image Results");
+			Table.set(Column_3, current_last_row, Ch2_puncta, "Image Results");
 			Column_4 = "Number of "+ Channel_2 + " puncta per 10 um2";
-			Table.set(Column_4, current_last_row, 10*puncta/area, "Image Results");			
+			Table.set(Column_4, current_last_row, 10*Ch2_puncta/area, "Image Results");			
 			run("Clear Results");
 			
 //Calculate the percentage of GFP-positive RFP puncta (for Sanjana's marker lines)
 			Ch1 = Table.get(Column_1, current_last_row,"Image Results");
 			//ParseInt is needed, because Mac OS retrieves values from the table as strings
-			Ch1_Int = parseInt(Ch1);
+			Ch1_Int = parseFloat(Ch1);
 			Ch2 = Table.get(Column_2, current_last_row,"Image Results");
-			Ch2_Int = parseInt(Ch2);
-			percent = Ch1_Int*100/Ch2_Int;
-			Column_5 = "% of "+ Channel_2 + " puncta positive for " + Channel_1;
+			Ch2_Int = parseFloat(Ch2);
+			RFP_GFP_ratio = Ch2_Int/Ch1_Int;
+			percent = 100/RFP_GFP_ratio;
+            Column_5 = "% of "+ Channel_2 + " puncta positive for " + Channel_1;
 			Table.set(Column_5, current_last_row, percent, "Image Results");	
 			}
 
@@ -173,6 +193,10 @@ prominence_for_Channel_2 = 40;
 
 //Save the quantification results into a .csv table file
 	Table.save(output_dir + "Puncta quantification for " + original_folder_name + ".csv");
+	
+//Save the log
+selectWindow("Log");
+saveAs("Text", output_dir + "Analysis summary.txt");
  
 //A feeble attempt to close those pesky ImageJ windows		
 	run("Close All");
