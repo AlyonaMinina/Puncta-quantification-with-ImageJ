@@ -20,10 +20,11 @@ Currently there are two macro files: to quantify puncta in a single or in two fl
 6. If needed edit the number and dimensions for ROIs to be analyzed on each image
 7. Adjust ROIs sizes and positions
 8. Hit ok-> macro will process all ROIs for the current image and loop to the next image
-8. Macro will generate a Results subfolder in the directory selected in the Step 5 with:
+9. Macro will generate a Results subfolder in the directory selected in the Step 5 with:
 - ROIs sets for each analyzed image
 - For each analyzed image a subfolder with ROI previews showing also positions of detected puncta
 - A single .csv table with combined quantification for all analyzed images. The file will contain information on image name, ROI number, ROI area in um2, puncta number per ROI and per um2.
+10. NB! if you are not satisfied with the quality of puncta detection using selected prominence values, you can run maro again on the same folder, select different prominence values. For each image macro will automaitcally load ROIs placed and adjusted in the previous run.
 </br>
 </br>
 <p align="center"> <a href="https://youtu.be/4rSlMzSEKe8"><img src="https://github.com/AlyonaMinina/Puncta-quantification-with-IamgeJ/blob/main/Images/Youtube%20preview.PNG" width = 480> </img></a></p>
