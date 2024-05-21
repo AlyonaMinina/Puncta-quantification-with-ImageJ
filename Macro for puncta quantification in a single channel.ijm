@@ -1,3 +1,4 @@
+//Alyona Minina. Uppsala.2024
 //Clear the log window if it was open
 if (isOpen("Log")){
 	selectWindow("Log");
@@ -15,10 +16,19 @@ Column_5 = "Number of Autophagic bodies per 10 um2";
 
 // Print the unnecessary greeting
 print(" ");
-print("Welcome to the macro for autophagic body density measurement!");
+print("Welcome to the macro for autophagic body density measurement in a single fluorescent channel!");
 print(" ");
-print("Please select the folder with images for analysis");
+print("This macro can be used for follwoing formats: .czi (Carl Zeiss Image) or .tif image files");
 print(" ");
+print(" ");
+
+
+// ask user for the desired file format. It is kept as a dialog instead of automated detection, due to the frequent error of keeping extra tiff files in the analysis folder (despite the printed warning)
+Dialog.create("Image file format");
+Dialog.addMessage("Please select the format of the images used for this analysis. Hit ok to proceed to selecting the folder with the images.");
+Dialog.addChoice("Image file format:", newArray(".czi", ".tif"));
+Dialog.show();
+image_format = Dialog.getChoice();
 
 // Find the original directory and create a new one for quantification results
 original_dir = getDirectory("Select a directory");
@@ -30,16 +40,41 @@ File.makeDirectory(output_dir);
 // Get a list of all files in the directory
 file_list = getFileList(original_dir);
 
-// Create a shorter list contiaiing . czi files only
-czi_list = newArray(0);
-for(z = 0; z < file_list.length; z++) {
-	if(endsWith(file_list[z], ".czi")) {
-		czi_list = Array.concat(czi_list, file_list[z]);
+
+//If user selected .czi format, create a shorter list contiaiing .czi files only
+if (image_format == ".czi") {
+	image_list = newArray(0);
+	for(z = 0; z < file_list.length; z++) {
+		if(endsWith(file_list[z], ".czi")) {
+			image_list = Array.concat(image_list, file_list[z]);
+		}
+	 }
+	//abort the macro if no files of the correct format were found
+ 	if(image_list.length == 0){
+    print("No '.czi' files found in the selected folder. Stopping the macro.");
+    // Stop the macro execution
+    exit();
+	} 
+}
+
+//If user selected .tif format, create a shorter list contiaiing .tif files only
+if (image_format == ".tif") {
+	image_list = newArray(0);
+	for(z = 0; z < file_list.length; z++) {
+		if(endsWith(file_list[z], ".tif")) {
+			image_list = Array.concat(image_list, file_list[z]);
+		}
+	 }
+	//abort the macro if no files of the correct format were found
+ 	if(image_list.length == 0){
+    print("No '.tif' files found in the selected folder. Stopping the macro.");
+    // Stop the macro execution
+    exit();
 	}
 }
 
 // Tell user how many images will be analyzed by the macro
-print(czi_list.length + " images were detected for analysis");
+print(image_list.length + " " + image_format + " images were detected for analysis");
 print("");
 print(" ");
 
@@ -66,10 +101,10 @@ print("measuring " + number_of_ROIs + " ROIs per image, wich equates to " + ROI_
 print(" ");
 print(" ");
 
-// Loop analysis through the list of . czi files
+// Loop analysis through the list of image files
 
-for (i = 0; i < czi_list.length; i++) {
-	path = original_dir + czi_list[i];
+for (i = 0; i < image_list.length; i++) {
+	path = original_dir + image_list[i];
 	run("Bio-Formats Windowless Importer",  "open=path");
 		      
 	// Get the image file title and remove the extension from it    
@@ -79,7 +114,7 @@ for (i = 0; i < czi_list.length; i++) {
 	short_name = substring(title, 0, b);
 			
 	// Print for the user what image is being processed
-	print ("Processing image " + i+1 + " out of " + czi_list.length + ":");
+	print ("Processing image " + i+1 + " out of " + image_list.length + ":");
 	print(title);
 	print("");
 							
@@ -138,7 +173,6 @@ for (i = 0; i < czi_list.length; i++) {
 		run("Clear Results");
 				
 		// Duplicate ROI and quantify autophagic bodies within it
-		
 		setSlice(1);
 		run("Duplicate...", "duplicate channels=1");
 		rename("Micrograph");
@@ -156,14 +190,14 @@ for (i = 0; i < czi_list.length; i++) {
 		run("Flatten");
 		selectWindow("Micrograph");
 		run("RGB Color");
-		Table.save(output_dir + "Autophagic bodies density for experiment " + original_folder_name + ".csv");
+		Table.save(output_dir + "Autophagic bodies density macro results for experiment " + original_folder_name + ".csv");
 		
 		//log particles number into the Autophagic bodies density table
 		AB_count = Table.get(Column_4, current_last_row, Density_table);
 		ROI_area = Table.get(Column_3, current_last_row, Density_table);
 		Table.set(Column_5, current_last_row, 10*AB_count/ROI_area, Density_table);
 		run("Clear Results");
-		Table.save(output_dir + "Autophagic bodies density for experiment " + original_folder_name + ".csv");		
+		Table.save(output_dir + "Autophagic bodies density macro results for experiment " + original_folder_name + ".csv");		
 		
 		//Save thersholding results
 		run("Combine...", "stack1=Micrograph stack2=Segmentation-1");
@@ -183,9 +217,6 @@ for (i = 0; i < czi_list.length; i++) {
 //Save the quantification results into a .csv table file
 Table.save(output_dir + "Autophagic bodies density macro results for experiment " + original_folder_name + ".csv");
 
-//Save the log
-selectWindow("Log");
-saveAs("Text", output_dir + "Analysis summary.txt");
  
 //A feeble attempt to close those pesky ImageJ windows		
 run("Close All");
@@ -216,3 +247,7 @@ print("Your quantification results are saved in the folder " + output_dir);
 print(" "); 
 print(" ");
 print("Alyona Minina. 2024.");
+
+//Save the log
+selectWindow("Log");
+saveAs("Text", output_dir + "Analysis summary.txt");
