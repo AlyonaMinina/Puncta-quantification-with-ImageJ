@@ -67,11 +67,11 @@ print(" ");
 //Request info from the user about the number and dimensions of the ROIs they wish to analyze
 	Channel_1 = "GFP";	  
 	Channel_2 = "RFP";
-	number_of_ROIs = 10;
+	number_of_ROIs = 5;
 	ROI_height = 20;
 	ROI_width = 10;
-	prominence_for_Channel_1 = 30;
-	prominence_for_Channel_2 = 40;
+	prominence_for_Channel_1 = 70;
+	prominence_for_Channel_2 = 70;
 	
 	Dialog.create("Please provide ROIs parameters for your images");
 	Dialog.addString("Channel 1 name:", Channel_1);
@@ -151,7 +151,7 @@ print(" ");
 				}
 			}
 	//Wait for the user to adjust the ROIs size and position
-		waitForUser("Adjust each ROI, then hit OK"); 
+		//waitForUser("Adjust each ROI, then hit OK"); 
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
 		run("ROI Manager...");
@@ -171,7 +171,14 @@ print(" ");
 			run("Clear Results");
 			
 //Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 11
+			selectWindow(title);
 			setSlice(1);
+			run("Duplicate...", "duplicate channels=1");
+			rename("Micrograph");
+			run("Duplicate...", " ");
+			rename("Segmentation");
+			run("8-bit");
+			run("Enhance Contrast...", "saturated=0.35");
 			run("Find Maxima...", "prominence=prominence_for_Channel_1 output=Count");
 			Ch1_puncta = getResult("Count",  0);
 			Column_1 = "Number of " + Channel_1 + " puncta in the ROI";
@@ -179,10 +186,31 @@ print(" ");
 			Column_2 = "Number of "+ Channel_1 + " puncta per 10 um2";
 			Table.set(Column_2, current_last_row, 10*Ch1_puncta/area, "Image Results");
 			run("Clear Results");
+			//create a segmented image
+			run("Find Maxima...", "prominence="+ prominence_for_Channel_1 +" exclude output=[Point Selection]");
+			run("Flatten");
+			selectWindow("Micrograph");
+			run("RGB Color");
+			//Save thersholding results
+			run("Combine...", "stack1=Micrograph stack2=Segmentation-1");
+			segmentation_dir = output_dir + short_name + File.separator;
+			File.makeDirectory(segmentation_dir);
+			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch1.tif");
+			close();
+			selectWindow("Segmentation");
+			run("Close");
+			
 			
 			
 //Quantify puncta on the second channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
+			selectWindow(title);
 			setSlice(2);
+			run("Duplicate...", "duplicate channels=1");
+			rename("Micrograph");
+			run("Duplicate...", " ");
+			rename("Segmentation");
+			run("8-bit");
+			run("Enhance Contrast...", "saturated=0.35");
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
 			Ch2_puncta = getResult("Count",  0);
 			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
@@ -190,6 +218,20 @@ print(" ");
 			Column_4 = "Number of "+ Channel_2 + " puncta per 10 um2";
 			Table.set(Column_4, current_last_row, 10*Ch2_puncta/area, "Image Results");			
 			run("Clear Results");
+			//create a segmented image
+			run("Find Maxima...", "prominence="+ prominence_for_Channel_2 +" exclude output=[Point Selection]");
+			run("Flatten");
+			selectWindow("Micrograph");
+			run("RGB Color");
+			//Save thersholding results
+			run("Combine...", "stack1=Micrograph stack2=Segmentation-1");
+			segmentation_dir = output_dir + short_name + File.separator;
+			File.makeDirectory(segmentation_dir);
+			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch2.tif");
+			close();
+			selectWindow("Segmentation");
+			run("Close");
+			
 			
 //Calculate the percentage of GFP-positive RFP puncta (for Sanjana's marker lines)
 			Ch1 = Table.get(Column_1, current_last_row,"Image Results");
@@ -201,7 +243,7 @@ print(" ");
 			Table.set(Column_5, current_last_row, Ch1_Int/Ch2_Int, "Image Results");
 			Column_6 = Channel_2 + " to " + Channel_1 + " puncta ratio";
 			Table.set(Column_6, current_last_row,  Ch2_Int/Ch1_Int, "Image Results");
-			}
+			}
 
 //Save maxima quantification as .csv file and ROIs as a .zip file
 			roiManager("Save", output_dir + short_name +"_ROIs.zip");
@@ -236,5 +278,3 @@ print(" ");
 //Save the log
 	selectWindow("Log");
 	saveAs("Text", output_dir + "Analysis summary.txt");
- 
-
