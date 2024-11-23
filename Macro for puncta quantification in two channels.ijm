@@ -151,7 +151,7 @@ print(" ");
 				}
 			}
 	//Wait for the user to adjust the ROIs size and position
-		//waitForUser("Adjust each ROI, then hit OK"); 
+		waitForUser("Adjust each ROI, then hit OK"); 
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
 		run("ROI Manager...");
