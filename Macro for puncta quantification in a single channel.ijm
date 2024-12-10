@@ -180,13 +180,13 @@ for (i = 0; i < image_list.length; i++) {
 		rename("Segmentation");
 		run("8-bit");
 		run("Enhance Contrast...", "saturated=0.35");
-		run("Find Maxima...", "prominence="+ prominence +" exclude strict output=Count");
+		run("Find Maxima...", "prominence="+ prominence +" strict output=Count");
 		//save particles areas as a .csv file
 		AB_count = getResult("Count");
 		Table.set(Column_4, current_last_row, AB_count, Density_table);
 		run("Clear Results");
 		//create a segmented image
-		run("Find Maxima...", "prominence="+ prominence +" exclude output=[Point Selection]");
+		run("Find Maxima...", "prominence="+ prominence +" strict output=[Point Selection]");
 		run("Flatten");
 		selectWindow("Micrograph");
 		run("RGB Color");
