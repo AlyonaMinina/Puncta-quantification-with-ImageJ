@@ -1,5 +1,11 @@
 # ImageJ macro scripts for puncta quantification
 
+
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14506480.svg)](https://doi.org/10.5281/zenodo.14506480)
+
+
+
 These short scripts are designed to aid semi-automated puncta quantification on .czi (Carl Zeiss Image) microscopy images or on .tif image files.
 To use this macro for Leica microscopy images, please export them first as tifs. You can do it in bulk using the dedicated ImageJ macro  ["Processing Leica CLSM project file for vacFRAP.ijm"](https://github.com/AlyonaMinina/Connectivity-Index)
 </br>
