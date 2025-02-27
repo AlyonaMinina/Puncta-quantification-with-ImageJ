@@ -170,7 +170,7 @@ print(" ");
 			Table.set("Area in um2", current_last_row, area, "Image Results");
 			run("Clear Results");
 			
-//Quantify puncta on the first channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 11
+//Quantify puncta on the first channel of the image.
 			selectWindow(title);
 			setSlice(1);
 			run("Duplicate...", "duplicate channels=1");
@@ -202,7 +202,7 @@ print(" ");
 			
 			
 			
-//Quantify puncta on the second channel of the image. NB!!! if needed, change the prominence for Find Maxima in the line 12
+//Quantify puncta on the second channel of the image. 
 			selectWindow(title);
 			setSlice(2);
 			run("Duplicate...", "duplicate channels=1");
@@ -237,7 +237,7 @@ print(" ");
 			Ch1 = Table.get(Column_1, current_last_row,"Image Results");
 			//ParseInt is needed, because Mac OS retrieves values from the table as strings
 			Ch1_Int = parseFloat(Ch1);
-			Ch2 = Table.get(Column_2, current_last_row,"Image Results");
+			Ch2 = Table.get(Column_3, current_last_row,"Image Results");
 			Ch2_Int = parseFloat(Ch2);
 			Column_5 = Channel_1 + " to " + Channel_2 + " puncta ratio";
 			Table.set(Column_5, current_last_row, Ch1_Int/Ch2_Int, "Image Results");
