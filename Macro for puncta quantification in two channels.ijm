@@ -197,8 +197,11 @@ print(" ");
 			File.makeDirectory(segmentation_dir);
 			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch1.tif");
 			close();
+			close();
+			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
 			run("Close");
+		}
 			
 			
 			
@@ -229,8 +232,11 @@ print(" ");
 			File.makeDirectory(segmentation_dir);
 			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch2.tif");
 			close();
+			close();
+			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
 			run("Close");
+		}
 			
 			
 //Calculate the percentage of GFP-positive RFP puncta (for Sanjana's marker lines)
