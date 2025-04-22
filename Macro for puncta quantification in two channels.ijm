@@ -67,11 +67,11 @@ print(" ");
 //Request info from the user about the number and dimensions of the ROIs they wish to analyze
 	Channel_1 = "GFP";	  
 	Channel_2 = "RFP";
-	number_of_ROIs = 5;
+	number_of_ROIs = 6;
 	ROI_height = 20;
 	ROI_width = 10;
-	prominence_for_Channel_1 = 70;
-	prominence_for_Channel_2 = 70;
+	prominence_for_Channel_1 = 75;
+	prominence_for_Channel_2 = 80;
 	
 	Dialog.create("Please provide ROIs parameters for your images");
 	Dialog.addString("Channel 1 name:", Channel_1);
@@ -150,8 +150,8 @@ print(" ");
 				roiManager("Show All with labels");
 				}
 			}
-	//Wait for the user to adjust the ROIs size and position
-		waitForUser("Adjust each ROI, then hit OK"); 
+//Comment out the line below, while rerunning the macro, if you do not want to adjust the ROIs size and position
+		//waitForUser("Adjust each ROI, then hit OK"); 
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
 		run("ROI Manager...");
@@ -197,7 +197,6 @@ print(" ");
 			File.makeDirectory(segmentation_dir);
 			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch1.tif");
 			close();
-			close();
 			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
 			run("Close");
@@ -205,16 +204,19 @@ print(" ");
 			
 			
 			
+			
 //Quantify puncta on the second channel of the image. 
 			selectWindow(title);
 			setSlice(2);
-			run("Duplicate...", "duplicate channels=1");
+			run("Duplicate...", "duplicate channels=2");
 			rename("Micrograph");
 			run("Duplicate...", " ");
 			rename("Segmentation");
 			run("8-bit");
 			run("Enhance Contrast...", "saturated=0.35");
+			run("Gaussian Blur...", "sigma=0.05 scaled");
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
+			run("Magenta");
 			Ch2_puncta = getResult("Count",  0);
 			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
 			Table.set(Column_3, current_last_row, Ch2_puncta, "Image Results");
@@ -231,7 +233,6 @@ print(" ");
 			segmentation_dir = output_dir + short_name + File.separator;
 			File.makeDirectory(segmentation_dir);
 			saveAs("Tiff", segmentation_dir + "Segmentation results for ROI " + (r+1) + " Ch2.tif");
-			close();
 			close();
 			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
