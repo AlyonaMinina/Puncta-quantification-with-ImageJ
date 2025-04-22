@@ -2,7 +2,9 @@
 
 
 
-**! Please reference the original study [(Zou et al., 202)](https://www.nature.com/articles/s41467-024-55754-1) when using this scipts!**
+
+**!! Please reference the study [(Zou et al., 202)](https://www.nature.com/articles/s41467-024-55754-1) when using this scipts!! Thank you!**
+
 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14506480.svg)](https://doi.org/10.5281/zenodo.14506480)
