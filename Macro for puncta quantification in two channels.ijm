@@ -1,4 +1,4 @@
-//Alyona Minina. Uppsala.2024
+//Alyona Minina. Uppsala. 2025
 //Clear the log window if it was open
 	if (isOpen("Log")){
 		selectWindow("Log");
@@ -8,7 +8,6 @@
 //Print the unnecessary greeting
 	print(" ");
 	print("Welcome to the macro for autophagic body density measurement in two fluorescent channels!");
-	print(" ");
 	print(" ");
 	
 // ask user for the desired file format. It is kept as a dialog instead of automated detection, due to the frequent error of keeping extra tiff files in the analysis folder (despite the printed warning)
@@ -60,14 +59,13 @@ if (image_format == ".tif") {
 }
 
 // Tell user how many images will be analyzed by the macro
-print(image_list.length + " " + image_format + " images were detected for analysis");
-print("");
-print(" ");
+print(image_list.length + "  '" + image_format + "' images were detected for analysis");
+
 
 //Request info from the user about the number and dimensions of the ROIs they wish to analyze
 	Channel_1 = "GFP";	  
 	Channel_2 = "RFP";
-	number_of_ROIs = 6;
+	number_of_ROIs = 5;
 	ROI_height = 20;
 	ROI_width = 10;
 	prominence_for_Channel_1 = 40;
@@ -95,20 +93,19 @@ print(" ");
 	Channel_2 = Dialog.getString();
 	prominence_for_Channel_1 = Dialog.getNumber();
 	prominence_for_Channel_2 = Dialog.getNumber();
-	Gaussian_Channel_1 =Dialog.getNumber();
-	Gaussian_Channel_2 =Dialog.getNumber();
+	Gaussian_Channel_1 = Dialog.getNumber();
+	Gaussian_Channel_2 = Dialog.getNumber();
 	number_of_ROIs = Dialog.getNumber();
 	ROI_height = Dialog.getNumber();
 	ROI_width = Dialog.getNumber();	
-	print("The analysis will be performed using prominence value for Ch1 = " + prominence_for_Channel_1 + " and for Ch2 = " + prominence_for_Channel_2 + "," );
-	print(number_of_ROIs + " ROIs will be analyzed per image. If ROIs sizes remain unchanged, the total analyzed area willl be " + ROI_height*ROI_width*number_of_ROIs + " um2 per image");
+	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Channel_1 + " and for Ch2 = " + prominence_for_Channel_2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Channel_1 + " and for Ch2 = " + Gaussian_Channel_2);	
 	print(" ");	
 	print(" ");
 
 //Create the table for all results
 	Table.create("Image Results");
 	
-//Loop analysis through the list of . czi files
+//Loop analysis through the list of image files
 	for (i = 0; i < image_list.length; i++){
 		path = original_dir + image_list[i];
 		run("Bio-Formats Windowless Importer",  "open=path");
@@ -122,7 +119,7 @@ print(" ");
 //Print for the user what image is being processed
 		print ("Processing image " + i+1 + " out of " + image_list.length + ":");
 		print(title);
-		print("");
+		
 					
 //Adjust the ROIs for each micrographs
 		run("ROI Manager...");
@@ -160,6 +157,18 @@ print(" ");
 			}
 //Comment out the line below, while rerunning the macro, if you do not want to adjust the ROIs size and position
 		waitForUser("Adjust each ROI, then hit OK"); 
+		
+//Make sure all ROIs are sequenatially renumbered in case f the user changed the default RO number		
+		run("ROI Manager...");
+		ROI_number = roiManager("count");
+		for (no_roi = 0; no_roi < ROI_number; no_roi++) {
+		roiManager("Select", no_roi);
+        roiManager("Rename", no_roi + 1);
+        roiManager("Show All");
+		roiManager("Show All with labels");
+		}
+		print(ROI_number + " ROIs will be analyzed for this image");
+		print(" ");
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
 		run("ROI Manager...");
@@ -167,6 +176,9 @@ print(" ");
 		for ( r=0; r<ROI_number; r++ ) {
 			roiManager("Select", r);
 			current_last_row = Table.size("Image Results");
+			//Record full file path. Setting for re-analyzing images for OSA part I
+			imagePath = original_dir + title;
+			Table.set("File path", current_last_row, imagePath, "Image Results");
 			Table.set("File name", current_last_row, short_name, "Image Results");
 			Table.set("ROI number", current_last_row, r+1, "Image Results");
 			
@@ -175,6 +187,14 @@ print(" ");
 			run("Set Measurements...", "area redirect=None decimal=3");
 			run("Measure");
 			area = getResult("Area", 0);
+			// a workaround for the inexplicable bug when area value sometimes = 0 
+			if(area == 0){
+				print( "Area value = 0 is detected for " + short_name + ROI_number);
+				run("Clear Results");
+				run("Set Measurements...", "area redirect=None decimal=3");
+				run("Measure");
+				area = getResult("Area", 0);
+			}
 			Table.set("Area in um2", current_last_row, area, "Image Results");
 			run("Clear Results");
 			
@@ -198,7 +218,9 @@ print(" ");
 			//create a segmented image
 			run("Find Maxima...", "prominence="+ prominence_for_Channel_1 +" exclude output=[Point Selection]");
 			run("Flatten");
+			run("RGB Color");
 			selectWindow("Micrograph");
+			run("Green");
 			run("RGB Color");
 			//Save thersholding results
 			run("Combine...", "stack1=Micrograph stack2=Segmentation-1");
@@ -225,7 +247,6 @@ print(" ");
 			run("Gaussian Blur...", "sigma=" + Gaussian_Channel_2 + " scaled");
 			run("Enhance Contrast...", "saturated=0.35");
 			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
-			run("Magenta");
 			Ch2_puncta = getResult("Count",  0);
 			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
 			Table.set(Column_3, current_last_row, Ch2_puncta, "Image Results");
@@ -235,7 +256,9 @@ print(" ");
 			//create a segmented image
 			run("Find Maxima...", "prominence="+ prominence_for_Channel_2 +" exclude output=[Point Selection]");
 			run("Flatten");
+			run("RGB Color");
 			selectWindow("Micrograph");
+			run("Magenta");
 			run("RGB Color");
 			//Save thersholding results
 			run("Combine...", "stack1=Micrograph stack2=Segmentation-1");
@@ -289,7 +312,7 @@ print(" ");
    print("Your quantification results are saved in the folder " + output_dir);
    print(" "); 
    print(" ");
-   print("Alyona Minina. 2023");
+   print("Alyona Minina. 2025");
    
 //Save the log
 	selectWindow("Log");
