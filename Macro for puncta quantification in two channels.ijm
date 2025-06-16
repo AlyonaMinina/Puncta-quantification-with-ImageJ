@@ -208,7 +208,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			run("8-bit");
 			run("Gaussian Blur...", "sigma=" + Gaussian_Channel_1 + " scaled");
 			run("Enhance Contrast...", "saturated=0.35");
-			run("Find Maxima...", "prominence=prominence_for_Channel_1 output=Count");
+			run("Find Maxima...", "prominence="+ prominence_for_Channel_1 +" exclude output=Count");
 			Ch1_puncta = getResult("Count",  0);
 			Column_1 = "Number of " + Channel_1 + " puncta in the ROI";
 			Table.set(Column_1, current_last_row, Ch1_puncta, "Image Results");
@@ -231,10 +231,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
 			run("Close");
-		}
-			
-			
-			
+		}	
 			
 //Quantify puncta on the second channel of the image. 
 			selectWindow(title);
@@ -246,7 +243,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			run("8-bit");
 			run("Gaussian Blur...", "sigma=" + Gaussian_Channel_2 + " scaled");
 			run("Enhance Contrast...", "saturated=0.35");
-			run("Find Maxima...", "prominence=prominence_for_Channel_2 output=Count");
+			run("Find Maxima...", "prominence="+ prominence_for_Channel_2 +" exclude output=Count");
 			Ch2_puncta = getResult("Count",  0);
 			Column_3 =  "Number of " + Channel_2 + " puncta in the ROI";
 			Table.set(Column_3, current_last_row, Ch2_puncta, "Image Results");
@@ -269,21 +266,27 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			if (isOpen("Segmentation")){
 			selectWindow("Segmentation");
 			run("Close");
-		}
+		}		
 			
-			
-//Calculate the percentage of GFP-positive RFP puncta (for Sanjana's marker lines)
+//Calculate the percentage of GFP-positive RFP puncta
 			Ch1 = Table.get(Column_1, current_last_row,"Image Results");
 			//ParseInt is needed, because Mac OS retrieves values from the table as strings
 			Ch1_Int = parseFloat(Ch1);
 			Ch2 = Table.get(Column_3, current_last_row,"Image Results");
 			Ch2_Int = parseFloat(Ch2);
 			Column_5 = Channel_1 + " to " + Channel_2 + " puncta ratio";
-			Table.set(Column_5, current_last_row, Ch1_Int/Ch2_Int, "Image Results");
-			Column_6 = Channel_2 + " to " + Channel_1 + " puncta ratio";
-			Table.set(Column_6, current_last_row,  Ch2_Int/Ch1_Int, "Image Results");
+			if (Ch2_Int==0) {
+				Table.set(Column_5, current_last_row, 0, "Image Results"); // If no puncta were found in the ROI for Ch2, set the ratio to 0
+			} else {
+				Table.set(Column_5, current_last_row, Ch1_Int/Ch2_Int, "Image Results"); // Otherwise, calculate the ratio
 			}
-
+			Column_6 = Channel_2 + " to " + Channel_1 + " puncta ratio";
+			if (Ch1_Int==0 ) {
+				Table.set(Column_6, current_last_row, 0, "Image Results"); //  If no puncta were found in the ROI for Ch1, set the ratio to 0
+			} else {
+				Table.set(Column_6, current_last_row,  Ch2_Int/Ch1_Int, "Image Results"); // Otherwise, calculate the ratio
+			}
+}
 //Save maxima quantification as .csv file and ROIs as a .zip file
 			roiManager("Save", output_dir + short_name +"_ROIs.zip");
 			run("Close All");
