@@ -22,8 +22,36 @@ image_format = Dialog.getChoice();
 // Find the original directory and create a new one for quantification results
 original_dir = getDirectory("Select a directory");
 original_folder_name = File.getName(original_dir);
-old_run_dir = original_dir +"Results" + File.separator;
 
+// Create a list for both Results folders and IJM results subfolders
+r_list = newArray();
+
+// Get a list of all files and folders in the directory
+file_list = getFileList(original_dir);
+
+// First, check and add "Results" folder at the start of the list if it exists
+for (f = 0; f < file_list.length; f++) {
+    if (startsWith(file_list[f], "Results")) {
+        r_list = Array.concat(r_list, file_list[f]); // Add "Results" to the beginning of the list
+    }
+}
+
+// Now, loop through the rest of the directories and add any folders starting with "IJM results"
+for (f = 0; f < file_list.length; f++) {
+    if (startsWith(file_list[f].trim(), "IJM results")) {  // Ensure no leading/trailing spaces
+        r_list = Array.concat(r_list, file_list[f]);
+    }
+}
+
+if(r_list.length == 1){
+	previous_run_dir = original_dir + "Results" + File.separator;
+} else {
+	previous_run = substring(r_list[r_list.length-1], 0, 27);
+	previous_run_dir = original_dir + previous_run + File.separator;
+}
+
+ 
+ 
 //create output directory with a time stamp
 
 	// Get the current date and time components
@@ -36,12 +64,15 @@ old_run_dir = original_dir +"Results" + File.separator;
 	if(dayOfMonth < 9){
 		dayOfMonth = "0" + dayOfMonth;
 		}
+	if(second < 9){
+	second = "0" + second;
+	}
 	
 	// Format and print the timestamp without leading zeros in the day and month
 	timestamp = "" + year + "" + month + "" + dayOfMonth + "-" + hour + "" + minute + "" + second;
-	print(timestamp);
+	//print(timestamp);
 	
-	output_dir = original_dir + " IJM results " + timestamp + File.separator;
+	output_dir = original_dir + "IJM results " + timestamp + File.separator;
 	File.makeDirectory(output_dir);
 
 
@@ -122,6 +153,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 	ROI_width = Dialog.getNumber();	
 	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Channel_1 + " and for Ch2 = " + prominence_for_Channel_2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Channel_1 + " and for Ch2 = " + Gaussian_Channel_2);	
 	print(" ");	
+	print("If available, ROI sets will be reused from " + previous_run_dir);
 	print(" ");
 
 //Create the table for all results
@@ -159,7 +191,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 		y_coordinate =  parseInt(y);
 
 //Draw ROIs of the user-provided number and dimensions. Automatically load in already existing ROIs for the image (if not desired, comment out lines 107-114 and the line 124.
-	ROIset = old_run_dir + short_name + "_ROIs.zip";
+	ROIset = previous_run_dir + short_name + "_ROIs.zip";
 	f = File.exists(ROIset);
 		if(f>0){ 
 		roiManager("Open", ROIset);
