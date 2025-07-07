@@ -17,11 +17,33 @@ Dialog.addChoice("Image file format:", newArray(".czi", ".tif"));
 Dialog.show();
 image_format = Dialog.getChoice();
 
+
+
 // Find the original directory and create a new one for quantification results
 original_dir = getDirectory("Select a directory");
 original_folder_name = File.getName(original_dir);
-output_dir = original_dir +"Results" + File.separator;
-File.makeDirectory(output_dir);
+old_run_dir = original_dir +"Results" + File.separator;
+
+//create output directory with a time stamp
+
+	// Get the current date and time components
+	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+	
+	month = month +1;
+	if(month < 9) {
+		month = "0" + month;
+	}
+	if(dayOfMonth < 9){
+		dayOfMonth = "0" + dayOfMonth;
+		}
+	
+	// Format and print the timestamp without leading zeros in the day and month
+	timestamp = "" + year + "" + month + "" + dayOfMonth + "-" + hour + "" + minute + "" + second;
+	print(timestamp);
+	
+	output_dir = original_dir + " IJM results " + timestamp + File.separator;
+	File.makeDirectory(output_dir);
+
 
 // Get a list of all files in the directory
 file_list = getFileList(original_dir);
@@ -137,7 +159,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 		y_coordinate =  parseInt(y);
 
 //Draw ROIs of the user-provided number and dimensions. Automatically load in already existing ROIs for the image (if not desired, comment out lines 107-114 and the line 124.
-	ROIset = output_dir + short_name + "_ROIs.zip";
+	ROIset = old_run_dir + short_name + "_ROIs.zip";
 	f = File.exists(ROIset);
 		if(f>0){ 
 		roiManager("Open", ROIset);
