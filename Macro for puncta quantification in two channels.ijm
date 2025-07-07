@@ -168,7 +168,6 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 		roiManager("Show All with labels");
 		}
 		print(ROI_number + " ROIs will be analyzed for this image");
-		print(" ");
 						
 //Perform "Find Maxima" for each ROI and save the results into a custom table
 		run("ROI Manager...");
@@ -280,6 +279,11 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			} else {
 				Table.set(Column_5, current_last_row, Ch1_Int/Ch2_Int, "Image Results"); // Otherwise, calculate the ratio
 			}
+			if (Ch1_Int/Ch2_Int > 1) {
+				print("Warning! GFP to RFP ratio > 1");
+				print(" ");
+			}
+			
 			Column_6 = Channel_2 + " to " + Channel_1 + " puncta ratio";
 			if (Ch1_Int==0 ) {
 				Table.set(Column_6, current_last_row, 0, "Image Results"); //  If no puncta were found in the ROI for Ch1, set the ratio to 0
