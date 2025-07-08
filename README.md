@@ -39,4 +39,4 @@ Currently there are two macro files: to quantify puncta in a single or in two fl
 10. NB! if you are not satisfied with the quality of puncta detection using selected prominence values, you can run maro again on the same folder, select different prominence values. For each image macro will automaitcally load ROIs placed and adjusted in the previous run.
 </br>
 </br>
-<p align="center"> <a href="https://youtu.be/4rSlMzSEKe8"><img src="https://github.com/AlyonaMinina/Puncta-quantification-with-IamgeJ/blob/main/Images/Youtube%20preview.PNG" width = 480> </img></a></p>
+<p align="center"> <a href="https://youtu.be/4rSlMzSEKe8"><img src="https://github.com/AlyonaMinina/Puncta-quantification-with-ImageJ/blob/49cfcafc2e313ad38ca87ff43301bf85631d89d2/1.%20Original%20scripts/Images/Youtube%20preview.PNG" width = 480> </img></a></p>
