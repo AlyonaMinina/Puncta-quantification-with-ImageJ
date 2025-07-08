@@ -5,7 +5,7 @@
 
 This macro carries out semi-automated puncta quantification on .czi (Carl Zeiss Image) microscopy images or .tif image files.
 To use this macro for Leica microscopy images, please export them as tifs first. You can do this in bulk using the dedicated ImageJ macro "Processing Leica CLSM project file for vacFRAP.ijm".
-</br> </br> </br></br> </br>
+</br> </br> 
 
 The macro was designed to count mCherry-labelled autophagic bodies and quantify the uptake of GFP-labelled organellar markers by autophagy.
 
