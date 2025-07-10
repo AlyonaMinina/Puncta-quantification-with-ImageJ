@@ -41,7 +41,7 @@ old_run_dir = original_dir +"Results" + File.separator;
     	}
 	}
 	
-<<<<<<< HEAD:2. OSA project part I/OSA part I puncta quantification in two channels/1. IJM for puncta quantification in two channels.ijm
+	
 	if(r_list.length>0) {
 		if(r_list.length == 1){
 			previous_run_dir = original_dir + "Results" + File.separator;
@@ -50,7 +50,7 @@ old_run_dir = original_dir +"Results" + File.separator;
 			previous_run_dir = original_dir + previous_run + File.separator;
 		}
 	}
-=======
+
 //Print the unnecessary greeting
 	print(" ");
 	print("Welcome to the macro for autophagic body density measurement in two fluorescent channels!");
@@ -102,7 +102,6 @@ if(r_list.length == 1){
 
 	// Get the current date and time components
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
->>>>>>> 762ab277e1bbd076d933ce20022dabcf8640ff34:2. OSA project part I/OSA part I puncta quantification in two channels/1. Puncta quantification in two channels.ijm
 	
 //create output directory with a time stamp
 
@@ -115,7 +114,6 @@ if(r_list.length == 1){
 	}
 	if(dayOfMonth < 9){
 		dayOfMonth = "0" + dayOfMonth;
-<<<<<<< HEAD:2. OSA project part I/OSA part I puncta quantification in two channels/1. IJM for puncta quantification in two channels.ijm
 	}
 	if(hour < 9){
 	hour = "0" + hour;
@@ -254,7 +252,6 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 				if(f>0){ 
 				roiManager("Open", ROIset);
 				roiManager("Show All");
-=======
 		}
 	if(second < 9){
 	second = "0" + second;
@@ -398,7 +395,7 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 			    roiManager("Select", no_roi);
 		        roiManager("Rename", no_roi + 1);
 		        roiManager("Show All");
->>>>>>> 762ab277e1bbd076d933ce20022dabcf8640ff34:2. OSA project part I/OSA part I puncta quantification in two channels/1. Puncta quantification in two channels.ijm
+
 				roiManager("Show All with labels");
 				} else {
 					for (no_roi = 0; no_roi < number_of_ROIs; no_roi++) {
