@@ -41,6 +41,7 @@ old_run_dir = original_dir +"Results" + File.separator;
     	}
 	}
 	
+<<<<<<< HEAD:2. OSA project part I/OSA part I puncta quantification in two channels/1. IJM for puncta quantification in two channels.ijm
 	if(r_list.length>0) {
 		if(r_list.length == 1){
 			previous_run_dir = original_dir + "Results" + File.separator;
@@ -49,6 +50,59 @@ old_run_dir = original_dir +"Results" + File.separator;
 			previous_run_dir = original_dir + previous_run + File.separator;
 		}
 	}
+=======
+//Print the unnecessary greeting
+	print(" ");
+	print("Welcome to the macro for autophagic body density measurement in two fluorescent channels!");
+	print(" ");
+	
+// ask user for the desired file format. It is kept as a dialog instead of automated detection, due to the frequent error of keeping extra tiff files in the analysis folder (despite the printed warning)
+Dialog.create("Image file format");
+Dialog.addMessage("Please select the format of the images used for this analysis. Hit ok to proceed to selecting the folder with the images.");
+Dialog.addChoice("Image file format:", newArray(".czi", ".tif"));
+Dialog.show();
+image_format = Dialog.getChoice();
+
+
+
+// Find the original directory and create a new one for quantification results
+original_dir = getDirectory("Select a directory");
+original_folder_name = File.getName(original_dir);
+
+// Create a list for both Results folders and IJM results subfolders
+r_list = newArray();
+
+// Get a list of all files and folders in the directory
+file_list = getFileList(original_dir);
+
+// First, check and add "Results" folder at the start of the list if it exists
+for (f = 0; f < file_list.length; f++) {
+    if (startsWith(file_list[f], "Results")) {
+        r_list = Array.concat(r_list, file_list[f]); // Add "Results" to the beginning of the list
+    }
+}
+
+// Now, loop through the rest of the directories and add any folders starting with "IJM results"
+for (f = 0; f < file_list.length; f++) {
+    if (startsWith(file_list[f].trim(), "IJM results")) {  // Ensure no leading/trailing spaces
+        r_list = Array.concat(r_list, file_list[f]);
+    }
+}
+
+if(r_list.length == 1){
+	previous_run_dir = original_dir + "Results" + File.separator;
+} else {
+	previous_run = substring(r_list[r_list.length-1], 0, 27);
+	previous_run_dir = original_dir + previous_run + File.separator;
+}
+
+ 
+ 
+//create output directory with a time stamp
+
+	// Get the current date and time components
+	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+>>>>>>> 762ab277e1bbd076d933ce20022dabcf8640ff34:2. OSA project part I/OSA part I puncta quantification in two channels/1. Puncta quantification in two channels.ijm
 	
 //create output directory with a time stamp
 
@@ -61,6 +115,7 @@ old_run_dir = original_dir +"Results" + File.separator;
 	}
 	if(dayOfMonth < 9){
 		dayOfMonth = "0" + dayOfMonth;
+<<<<<<< HEAD:2. OSA project part I/OSA part I puncta quantification in two channels/1. IJM for puncta quantification in two channels.ijm
 	}
 	if(hour < 9){
 	hour = "0" + hour;
@@ -199,6 +254,151 @@ print(image_list.length + "  '" + image_format + "' images were detected for ana
 				if(f>0){ 
 				roiManager("Open", ROIset);
 				roiManager("Show All");
+=======
+		}
+	if(second < 9){
+	second = "0" + second;
+	}
+	
+	// Format and print the timestamp without leading zeros in the day and month
+	timestamp = "" + year + "" + month + "" + dayOfMonth + "-" + hour + "" + minute + "" + second;
+	//print(timestamp);
+	
+	output_dir = original_dir + "IJM results " + timestamp + File.separator;
+	File.makeDirectory(output_dir);
+
+
+// Get a list of all files in the directory
+file_list = getFileList(original_dir);
+
+//If user selected .czi format, create a shorter list contiaiing .czi files only
+if (image_format == ".czi") {
+	image_list = newArray(0);
+	for(z = 0; z < file_list.length; z++) {
+		if(endsWith(file_list[z], ".czi")) {
+			image_list = Array.concat(image_list, file_list[z]);
+		}
+	 }
+	//abort the macro if no files of the correct format were found
+ 	if(image_list.length == 0){
+    print("No '.czi' files found in the selected folder. Stopping the macro.");
+    // Stop the macro execution
+    exit();
+	} 
+}
+
+//If user selected .tif format, create a shorter list contiaiing .tif files only
+if (image_format == ".tif") {
+	image_list = newArray(0);
+	for(z = 0; z < file_list.length; z++) {
+		if(endsWith(file_list[z], ".tif")) {
+			image_list = Array.concat(image_list, file_list[z]);
+		}
+	 }
+	//abort the macro if no files of the correct format were found
+ 	if(image_list.length == 0){
+    print("No '.tif' files found in the selected folder. Stopping the macro.");
+    // Stop the macro execution
+    exit();
+	}
+}
+
+// Tell user how many images will be analyzed by the macro
+print(image_list.length + "  '" + image_format + "' images were detected for analysis");
+
+
+//Request info from the user about the number and dimensions of the ROIs they wish to analyze
+	Channel_1 = "GFP";	  
+	Channel_2 = "RFP";
+	number_of_ROIs = 5;
+	ROI_height = 20;
+	ROI_width = 10;
+	prominence_for_Channel_1 = 40;
+	prominence_for_Channel_2 = 50;
+	Gaussian_Channel_1 = 0.07;
+	Gaussian_Channel_2 = 0.07;
+	
+	Dialog.create("Please provide ROIs parameters for your images");
+	Dialog.addString("Channel 1 name:", Channel_1);
+	Dialog.addToSameRow();
+	Dialog.addString("Channel 2 name:", Channel_2);
+	Dialog.addNumber("Prominence value for Ch1:", prominence_for_Channel_1);
+	Dialog.addToSameRow();
+	Dialog.addNumber("Prominence value for Ch2:", prominence_for_Channel_2);
+	Dialog.addNumber("Gaussian blur value for Ch1:", Gaussian_Channel_1);
+	Dialog.addToSameRow();
+	Dialog.addNumber("Gaussian blur value for Ch2:", Gaussian_Channel_2);
+	Dialog.addNumber("Number of ROIs to be analyzed on each image:", number_of_ROIs);
+	Dialog.addNumber("Dimensions of ROIs. ROI height in um:", ROI_height);
+	Dialog.addNumber("ROI width in um:", ROI_width);
+	
+	Dialog.show();
+	
+	Channel_1 = Dialog.getString();
+	Channel_2 = Dialog.getString();
+	prominence_for_Channel_1 = Dialog.getNumber();
+	prominence_for_Channel_2 = Dialog.getNumber();
+	Gaussian_Channel_1 = Dialog.getNumber();
+	Gaussian_Channel_2 = Dialog.getNumber();
+	number_of_ROIs = Dialog.getNumber();
+	ROI_height = Dialog.getNumber();
+	ROI_width = Dialog.getNumber();	
+	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Channel_1 + " and for Ch2 = " + prominence_for_Channel_2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Channel_1 + " and for Ch2 = " + Gaussian_Channel_2);	
+	print(" ");	
+	print("If available, ROI sets will be reused from " + previous_run_dir);
+	print(" ");
+
+//Create the table for all results
+	Table.create("Image Results");
+	
+//Loop analysis through the list of image files
+	for (i = 0; i < image_list.length; i++){
+		path = original_dir + image_list[i];
+		run("Bio-Formats Windowless Importer",  "open=path");
+		      
+//Get the image file title and remove the extension from it    
+		title = getTitle();
+		a = lengthOf(title);
+		b = a-4;
+		short_name = substring(title, 0, b);
+		
+//Print for the user what image is being processed
+		print ("Processing image " + i+1 + " out of " + image_list.length + ":");
+		print(title);
+		
+					
+//Adjust the ROIs for each micrographs
+		run("ROI Manager...");
+		
+//Make sure ROI Manager is clean of any additional ROIs
+		roiManager("reset");
+	
+//Obtain coordinates to draw ROIs in the center of the image
+		x = getWidth()/2;
+		toScaled(x);
+		x_coordinate =  parseInt(x);
+		
+		y = getWidth()/2;
+		toScaled(y);
+		y_coordinate =  parseInt(y);
+
+//Draw ROIs of the user-provided number and dimensions. Automatically load in already existing ROIs for the image (if not desired, comment out lines 107-114 and the line 124.
+	ROIset = previous_run_dir + short_name + "_ROIs.zip";
+	f = File.exists(ROIset);
+		if(f>0){ 
+		roiManager("Open", ROIset);
+		roiManager("Show All");
+		roiManager("Show All with labels");
+		}
+	else {
+		for (no_roi = 0; no_roi < number_of_ROIs; no_roi++) {
+			    makeRectangle(x_coordinate, y_coordinate, ROI_width, ROI_height);
+			    run("Specify...", "width=ROI_width height=ROI_height x=x_coordinate y=y_coordinate slice=1 scaled");
+		        roiManager("Add");
+			    roiManager("Select", no_roi);
+		        roiManager("Rename", no_roi + 1);
+		        roiManager("Show All");
+>>>>>>> 762ab277e1bbd076d933ce20022dabcf8640ff34:2. OSA project part I/OSA part I puncta quantification in two channels/1. Puncta quantification in two channels.ijm
 				roiManager("Show All with labels");
 				} else {
 					for (no_roi = 0; no_roi < number_of_ROIs; no_roi++) {
