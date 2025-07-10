@@ -44,7 +44,7 @@
 		if(r_list.length == 1){
 			previous_run_dir = original_dir + "Results" + File.separator;
 		} else {
-			previous_run = substring(r_list[r_list.length-1], 0, 27);
+			previous_run = substring(r_list[r_list.length-1], 0, 28);
 			previous_run_dir = original_dir + previous_run + File.separator;
 		}
 	}
@@ -223,6 +223,7 @@
 		for (no_roi = 0; no_roi < ROI_number; no_roi++) {               
 			roiManager("Select", no_roi);
 	        roiManager("Rename", no_roi + 1);
+	        roiManager("Show All");
 			roiManager("Show All with labels");
 		}
 
@@ -237,6 +238,7 @@
 		for ( r=0; r<ROI_number; r++ ) { 			                               //load the saved ROI set for each ROI analysis. This step is needed because ROI Manager will be cleared to load maxima as rois as well
 			roiManager("reset");
 			roiManager("Open", newROIset);
+			roiManager("Show All");
 			roiManager("Show All with labels");
 			selectWindow(title);
 			roiManager("Select", r);	
@@ -444,7 +446,6 @@
 			run("Close");
 			selectWindow("Matching maxima " + Ch2 + "-1");
 			rename("Matching maxima " + Ch2);
-			rename("Matching maxima " + Ch2);			
 		}
 		
 		//combine previews of segmentation for Ch1 and Ch2

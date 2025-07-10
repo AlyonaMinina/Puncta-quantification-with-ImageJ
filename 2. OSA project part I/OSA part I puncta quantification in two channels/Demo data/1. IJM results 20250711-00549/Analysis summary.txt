@@ -1,0 +1,32 @@
+ 
+Welcome to the IJM for autophagic bodies density quantification in two fluorescent channels!
+ 
+20250711-00549
+2  '.czi' images were detected for analysis
+ The analysis is performed using 
+ Prominence value for Ch1 = 40 and for Ch2 = 50
+ Gaussian blur value for Ch1 = 0.07 and for Ch2 = 0.07
+ 
+ 
+Processing image 1 out of 2:
+1_1.czi
+5 ROIs will be analyzed for this image
+Processing image 2 out of 2:
+1_2.czi
+5 ROIs will be analyzed for this image
+Warning! GFP to RFP ratio > 1 for ROI 1
+ 
+Warning! GFP to RFP ratio > 1 for ROI 2
+ 
+Warning! GFP to RFP ratio > 1 for ROI 3
+ 
+Warning! GFP to RFP ratio > 1 for ROI 4
+ 
+Warning! GFP to RFP ratio > 1 for ROI 5
+ 
+ 
+All Done!
+Your quantification results are saved in the folder C:\Users\Alyona\Desktop\Demo\IJM results 20250711-00549\
+ 
+ 
+Alyona Minina. 2025
