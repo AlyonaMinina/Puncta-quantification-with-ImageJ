@@ -5,9 +5,16 @@
 
 This macro carries out semi-automated puncta quantification on .czi (Carl Zeiss Image) microscopy images or .tif image files.
 To use this macro for Leica microscopy images, please export them as tifs first. You can do this in bulk using the dedicated ImageJ macro "Processing Leica CLSM project file for vacFRAP.ijm".
-</br> </br> 
+</br> 
+</br> 
 
 The macro was designed to count mCherry-labelled autophagic bodies and quantify the uptake of GFP-labelled organellar markers by autophagy.
+</br>
+
+**NB!**
+- The first IJM segments images to identify puncta as intensity maxima, which are counted within user-selected ROIs. Ratio of Ch1/Ch2 maxima numbers is indicative of co-localization in our experimental layout.
+- The second IJM compares coordinates of found maxima for Ch2 and Ch1 and identifies maxima that are present in both channels and reports true co-localization.
+
 
 **Step by step Instructions:**
 
@@ -34,6 +41,7 @@ The macro was designed to count mCherry-labelled autophagic bodies and quantify 
    - A single .csv table with combined quantification for all analyzed images. The table will include:
    - Image name, file path, ROI number, and ROI area in µm².
    - Puncta number for each channel expressed per ROI and per µm². 
-   - The ratio of puncta number detected in Channel 1/Channel 2 and Channel 2/Channel 1.
+   - The first IJM will provide ratio of puncta number detected in Channel 1/Channel 2 and Channel 2/Channel 1. The second IJM will save the number of puncta with the same coordinates in Ch2 and Ch1 for each ROI and fro 10 um2.
+Note: If you are not satisfied with the quality of puncta detection, you can run the macro again on the same folder (as in Step 1) and select different prominence and Gaussian blur values. The macro will automatically load the ROIs saved in the latest macro run and offer the user an option to re-adjust the ROIs. If you do not wish to readjust the ROIs for each image again, you can comment out the line that starts with "Wait for user."
 
-    Note: If you are not satisfied with the quality of puncta detection, you can run the macro again on the same folder (as in Step 1) and select different prominence and Gaussian blur values. The macro will automatically load the ROIs saved in the latest macro run and offer the user an option to re-adjust the ROIs. If you do not wish to readjust the ROIs for each image again, you can comment out the line that starts with "Wait for user."
+**Note**: If you are not satisfied with the quality of puncta detection, you can run the macro again on the same folder (as in Step 1) and select different prominence and Gaussian blur values. The macro will automatically load ROIs saved in the latest macro run and offer user an option to re-adjust the ROIs. If you do not wish to readjust the ROIs for each image again, you can comment out the line that starts with "Wait for user"
