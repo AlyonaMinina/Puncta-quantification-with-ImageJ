@@ -1,0 +1,7 @@
+File path,File name,ROI number,Area in um2,Number of GFP puncta in the ROI,Number of GFP puncta per 10 um2,Number of RFP puncta in the ROI,Number of RFP puncta per 10 um2,Number of RFP puncta colocalizing with GFP,Number of colocalizing puncta per 10 um2 
+C:\Users\Alyona\Desktop\Demo data\1_1.czi,1_1,1,200.145,1,0.050,1,0.050,0,0.000
+C:\Users\Alyona\Desktop\Demo data\1_1.czi,1_1,2,200.145,3,0.150,3,0.150,2,0.010
+C:\Users\Alyona\Desktop\Demo data\1_1.czi,1_1,3,200.145,2,0.100,2,0.100,2,0.010
+C:\Users\Alyona\Desktop\Demo data\1_2.czi,1_2,1,48.035,19,3.955,19,3.955,11,0.229
+C:\Users\Alyona\Desktop\Demo data\1_2.czi,1_2,2,56.708,24,4.232,24,4.232,14,0.247
+C:\Users\Alyona\Desktop\Demo data\1_2.czi,1_2,3,68.800,36,5.233,36,5.233,16,0.233

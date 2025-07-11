@@ -113,14 +113,14 @@
 //Request info from the user about the number and dimensions of the ROIs they wish to analyze
 	Ch1 = "GFP";	  
 	Ch2 = "RFP";
-	number_of_ROIs = 2;
+	number_of_ROIs = 3;
 	ROI_height = 20;
 	ROI_width = 10;
 	prominence_for_Ch1 = 40;
-	prominence_for_Ch2 = 40;
+	prominence_for_Ch2 = 30;
 	Gaussian_Ch1 = 0.07;
 	Gaussian_Ch2 = 0.07;
-	threshold = 2.5;
+	threshold_um = 0.5;
 	
 	Dialog.create("Please provide ROIs parameters for your images");
 	Dialog.addString("Channel 1 name:", Ch1);
@@ -137,7 +137,7 @@
 	Dialog.addNumber("Dimensions of ROIs. ROI height in um:", ROI_height);
 	Dialog.addNumber("ROI width in um:", ROI_width);
 	Dialog.addMessage("");  
-	Dialog.addNumber("Colocalization treshold:", threshold);
+	Dialog.addNumber("Colocalization treshold in um:", threshold_um);
 	
 	Dialog.show();
 	
@@ -150,8 +150,8 @@
 	number_of_ROIs = Dialog.getNumber();
 	ROI_height = Dialog.getNumber();
 	ROI_width = Dialog.getNumber();	
-	threshold = Dialog.getNumber();	
-	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Ch1 + " and for Ch2 = " + prominence_for_Ch2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Ch1 + " and for Ch2 = " + Gaussian_Ch2 + "\n Colocalization threshold = " + threshold);	
+	threshold_um = Dialog.getNumber();	
+	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Ch1 + " and for Ch2 = " + prominence_for_Ch2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Ch1 + " and for Ch2 = " + Gaussian_Ch2 + "\n Colocalization threshold = " + threshold_um + " um");	
 	print(" ");	
 	print(" ");
 
@@ -162,7 +162,11 @@
 	for (il = 0; il < image_list.length; il++){
 		path = original_dir + image_list[il];
 		run("Bio-Formats Windowless Importer",  "open=path");
-		      
+		
+		//set scale according to the image resolution. needed later to convert threshold value into pixels, allows to analyze images of different resolution
+		getPixelSize(unit, pixelWidth, pixelHeight);
+		threshold = threshold_um / Math.max(pixelWidth, pixelHeight);   //just in case if pixels are not square, take in the largest value		
+				
 		//Get the image file title and remove the extension from it    
 		title = getTitle();
 		a = lengthOf(title);
@@ -179,11 +183,11 @@
 		roiManager("reset");
 	
 		x = getWidth()/2;                 //Obtain coordinates to draw ROIs in the center of the image
-		toScaled(x);
+		//toScaled(x);
 		x_coordinate =  parseInt(x);
 		
 		y = getWidth()/2;
-		toScaled(y);
+		//toScaled(y);
 		y_coordinate =  parseInt(y);
 
 		if(r_list.length>0) {
