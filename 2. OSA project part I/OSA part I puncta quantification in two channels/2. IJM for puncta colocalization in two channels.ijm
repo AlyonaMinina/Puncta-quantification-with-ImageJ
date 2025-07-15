@@ -54,19 +54,19 @@
 	getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);    // Get the current date and time components
 	
 	month = month +1;
-	if(month < 9) {                            
+	if(month < 10) {                            
 		month = "0" + month;                                                          //make sure the time stamp has the same length ndependent on the date/time
 	}
-	if(dayOfMonth < 9){
+	if(dayOfMonth < 10){
 		dayOfMonth = "0" + dayOfMonth;
 	}
-	if(hour < 9){
+	if(hour < 10){
 	hour = "0" + hour;
 	}
-	if(minute < 9){
+	if(minute < 10){
 	minute = "0" + minute;
 	}
-	if(second < 9){
+	if(second < 10){
 	second = "0" + second;
 	}
 
