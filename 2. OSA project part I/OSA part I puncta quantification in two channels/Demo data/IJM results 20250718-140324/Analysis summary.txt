@@ -1,0 +1,23 @@
+ 
+Welcome to the IJM for puncta quantification in two fluorescent channels!
+ 
+2  '.czi' images were detected for analysis
+ The analysis is performed using 
+ Prominence value for Ch1 = 40 and for Ch2 = 30
+ Gaussian blur value for Ch1 = 0.07 and for Ch2 = 0.07
+ Colocalization threshold = 0.5 um
+ Brightness adjustment factor = 0.5
+ 
+ 
+Processing image 1 out of 2:
+1_1.czi
+3 ROIs will be analyzed for this image
+Processing image 2 out of 2:
+1_2.czi
+3 ROIs will be analyzed for this image
+ 
+All Done!
+Your quantification results are saved in the folder C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\IJM results 20250718-140324\
+ 
+ 
+Alyona Minina. 2025

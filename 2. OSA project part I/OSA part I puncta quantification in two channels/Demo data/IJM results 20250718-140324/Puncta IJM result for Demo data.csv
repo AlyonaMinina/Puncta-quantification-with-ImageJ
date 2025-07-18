@@ -1,0 +1,7 @@
+File path,File name,ROI number,Area in um2,Number of GFP puncta in the ROI,Number of GFP puncta per 10 um2,Number of RFP puncta in the ROI,Number of RFP puncta per 10 um2,Number of RFP puncta colocalizing with GFP,Number of colocalizing puncta per 10 um2 
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_1.czi,1_1,1,200.145,1,0.050,1,0.050,0,0.000
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_1.czi,1_1,2,200.145,3,0.150,3,0.150,2,0.010
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_1.czi,1_1,3,200.145,2,0.100,2,0.100,2,0.010
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_2.czi,1_2,1,192.139,20,1.041,20,1.041,10,0.052
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_2.czi,1_2,2,226.831,28,1.234,28,1.234,14,0.062
+C:\Users\Alyona\Documents\GitHub\Puncta-quantification-with-ImageJ\2. OSA project part I\OSA part I puncta quantification in two channels\Demo data\1_2.czi,1_2,3,275.200,39,1.417,39,1.417,21,0.076
