@@ -295,6 +295,7 @@
 			run("Subtract Background...", "rolling=25");
 			run("Gaussian Blur...", "sigma=" + Gaussian_Ch2 + " scaled");
 			run("Enhance Contrast...", "saturated=0.35");
+			run("Clear Results");
 			run("Find Maxima...", "prominence="+ prominence_for_Ch2 +" exclude output=Count");
 			Ch2_puncta = getResult("Count",  0);
 			Column_3 = "Number of " + Ch2 + " puncta in the ROI";
@@ -305,8 +306,10 @@
 			//Create a list of coordinates for maxima in Ch1 and Ch2
 			selectWindow("Segmentation " + Ch1);
 			run("Find Maxima...", "prominence=" + prominence_for_Ch1 + " exclude output=[Single Points]");
-			setOption("BlackBackground", false);
-			run("Convert to Mask");
+			if(Ch1_puncta>0){	//convert to mask only if any puncta were found
+				setOption("BlackBackground", false);
+				run("Convert to Mask");
+			}
 			rename(Ch1);
 			roiManager("reset");
 			run("Set Measurements...", "area display redirect=None decimal=3");
@@ -315,8 +318,10 @@
 			
 			selectWindow("Segmentation " + Ch2);
 			run("Find Maxima...", "prominence=" + prominence_for_Ch2 + " exclude output=[Single Points]");
-			setOption("BlackBackground", false);
-			run("Convert to Mask");
+			if(Ch2_puncta>0){	//convert to mask only if any puncta were found
+				setOption("BlackBackground", false);
+				run("Convert to Mask");
+			}
 			rename(Ch2);
 			roiManager("reset");
 			run("Set Measurements...", "area display redirect=None decimal=3");
@@ -355,36 +360,41 @@
 			    Ch2_y = Table.get("Y", m2, Ch2_table);
 		
 			    unique = "" + Ch2_x + "_" + Ch2_y;                  // Create a unique identifier for Ch2 maxima
-		
-			    found = false;            
-			    for (mp = 0; mp < matching_puncta.length; mp++) {       // Check if this Ch2 puncta has already been counted
-			        if (matching_puncta[mp] == unique) {
-			            found = true;                               // Mark as found if it exists in the matching_puncta list
-			            break;                                      // Exit the loop once it's found
-			        }
-			    }
-		
 			    
-			    if (!found) {                                                  // If the Ch2 puncta is unique, proceed to check with Ch1
-			        for (m1 = 0; m1 < Table.size(Ch1_table); m1++) { 		  // Loop through all the Ch1 maxima
-		            Ch1_x = Table.get("X", m1, Ch1_table);
-		            Ch1_y = Table.get("Y", m1, Ch1_table);
-
-		            distance_x = Math.abs(Ch2_x - Ch1_x); 		             // Calculate the distance between Ch2 and Ch1 for X and Y coordinates separately
-		            distance_y = Math.abs(Ch2_y - Ch1_y);
+			    if(Ch2_x != 0 && Ch2_y != 0){	//exclude puncta where x and y coordinates are 0 as these are false positives from not finidng any puncta in Ch2
 		
-			            if (distance_x <= threshold && distance_y <= threshold) {   		     // If both X and Y distances are within the threshold, consider it a match
-			                matching_puncta[matching_puncta.length] = unique; 		            // Store this Ch2 puncta as counted	               
-			                matching_maxima[matching_maxima.length] = Ch1_x;                   // Add the matching data to the matching_maxima to an indexed array
-			                matching_maxima[matching_maxima.length] = Ch1_y;
-			                matching_maxima[matching_maxima.length] = Ch2_x;
-			                matching_maxima[matching_maxima.length] = Ch2_y;
-			                matching_maxima[matching_maxima.length] = distance_x;
-			                matching_maxima[matching_maxima.length] = distance_y;
-			                break; 		                                                  // Stop checking for further matches for this Ch2 punctum once a match is found: Exit the inner loop to avoid matching this Ch2 punctum again
-			            }
-		        	}
-		    	}
+				    found = false;            
+				    for (mp = 0; mp < matching_puncta.length; mp++) {       // Check if this Ch2 puncta has already been counted
+				        if (matching_puncta[mp] == unique) {
+				            found = true;                               // Mark as found if it exists in the matching_puncta list
+				            break;                                      // Exit the loop once it's found
+				        }
+				    }
+			
+				    if (!found) {                                                  // If the Ch2 puncta is unique, proceed to check with Ch1
+				        for (m1 = 0; m1 < Table.size(Ch1_table); m1++) { 		  // Loop through all the Ch1 maxima
+			            Ch1_x = Table.get("X", m1, Ch1_table);
+			            Ch1_y = Table.get("Y", m1, Ch1_table);
+	
+			            distance_x = Math.abs(Ch2_x - Ch1_x); 		             // Calculate the distance between Ch2 and Ch1 for X and Y coordinates separately
+			            distance_y = Math.abs(Ch2_y - Ch1_y);
+			
+				            if (distance_x <= threshold && distance_y <= threshold) {   		     // If both X and Y distances are within the threshold, consider it a match
+				                matching_puncta[matching_puncta.length] = unique; 		            // Store this Ch2 puncta as counted	               
+				                matching_maxima[matching_maxima.length] = Ch1_x;                   // Add the matching data to the matching_maxima to an indexed array
+				                matching_maxima[matching_maxima.length] = Ch1_y;
+				                matching_maxima[matching_maxima.length] = Ch2_x;
+				                matching_maxima[matching_maxima.length] = Ch2_y;
+				                matching_maxima[matching_maxima.length] = distance_x;
+				                matching_maxima[matching_maxima.length] = distance_y;
+				                break; 		                                                  // Stop checking for further matches for this Ch2 punctum once a match is found: Exit the inner loop to avoid matching this Ch2 punctum again
+				            }
+			        	}
+			    	}
+			    }else{
+					matching_maxima = newArray();
+			    	break;  // No further need to check for this ROI
+			    }
 			}
 
 		Column_5 = "Number of " + Ch2 + " puncta colocalizing with " + Ch1;                  	// Add number of col-localized puncta to the table
