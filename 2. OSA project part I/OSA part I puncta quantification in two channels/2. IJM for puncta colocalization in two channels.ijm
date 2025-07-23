@@ -153,7 +153,7 @@
 	threshold_um = Dialog.getNumber();	
 	print(" The analysis is performed using \n Prominence value for Ch1 = " + prominence_for_Ch1 + " and for Ch2 = " + prominence_for_Ch2 + "\n Gaussian blur value for Ch1 = " + Gaussian_Ch1 + " and for Ch2 = " + Gaussian_Ch2 + "\n Colocalization threshold = " + threshold_um + " um");	
 	print(" ");	
-	print(" ");
+
 
 //Create the table for all results
 	Table.create("Image Results");
@@ -174,7 +174,8 @@
 		short_name = substring(title, 0, b);
 		
 		//Print for the user what image is being processed
-		print ("Processing image " + il+1 + " out of " + image_list.length + ":");
+	        print(" ");		
+                print ("Processing image " + il+1 + " out of " + image_list.length + ":");
 		print(title);
 		
 					
@@ -371,7 +372,8 @@
 				        }
 				    }
 			
-				    if (!found) {                                                  // If the Ch2 puncta is unique, proceed to check with Ch1
+				    
+if (!found) {                                                  // If the Ch2 puncta is unique, proceed to check with Ch1
 				        for (m1 = 0; m1 < Table.size(Ch1_table); m1++) { 		  // Loop through all the Ch1 maxima
 			            Ch1_x = Table.get("X", m1, Ch1_table);
 			            Ch1_y = Table.get("Y", m1, Ch1_table);
