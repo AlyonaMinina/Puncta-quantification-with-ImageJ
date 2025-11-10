@@ -184,11 +184,11 @@
 		roiManager("reset");
 	
 		x = getWidth()/2;                 //Obtain coordinates to draw ROIs in the center of the image
-		//toScaled(x);
+		toScaled(x);                      //NB! Comment out toScaled while reusing ROIs made with previous versions of IJM
 		x_coordinate =  parseInt(x);
 		
-		y = getWidth()/2;
-		//toScaled(y);
+		y = getHeight()/2;
+		toScaled(y);                    // NB! Comment out toScaled while reusing ROIs made with previous versions of IJM
 		y_coordinate =  parseInt(y);
 
 		if(r_list.length>0) {
@@ -597,3 +597,4 @@ if (!found) {                                                  // If the Ch2 pun
 //Save the log
 	selectWindow("Log");
 	saveAs("Text", output_dir + "Analysis summary.txt");
+
